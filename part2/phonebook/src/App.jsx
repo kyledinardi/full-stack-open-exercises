@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import Filter from '../components/Filter';
-import PersonForm from '../components/PersonForm';
-import Persons from '../components/Persons';
-import Notification from '../components/Notification';
-import personService from '../services/persons';
+import Filter from './components/Filter';
+import PersonForm from './components/PersonForm';
+import Persons from './components/Persons';
+import Notification from './components/Notification';
+import personService from './services/persons';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -45,14 +45,20 @@ const App = () => {
             setTimeout(() => setMessage(null), 5000);
           })
 
-          .catch(() => {
-            setMessage(
-              `Information of ${newName} has already been removed from server`,
-            );
+          .catch((error) => {
+            console.error(error);
 
-            setPersons(
-              persons.filter((person) => person.id !== personToUpdate.id),
-            );
+            if (error.status === 404) {
+              setMessage(
+                `Information of ${newName} has already been removed from server`,
+              );
+
+              setPersons(
+                persons.filter((person) => person.id !== personToUpdate.id),
+              );
+            } else {
+              setMessage(error.response.data.error);
+            }
 
             setIsError(true);
             setTimeout(() => setMessage(null), 5000);
@@ -72,6 +78,13 @@ const App = () => {
 
         setMessage(`Added ${returnedPerson.name}`);
         setIsError(false);
+        setTimeout(() => setMessage(null), 5000);
+      })
+
+      .catch((error) => {
+        console.error(error);
+        setMessage(error.response.data.error);
+        setIsError(true);
         setTimeout(() => setMessage(null), 5000);
       });
   };
