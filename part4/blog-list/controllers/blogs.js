@@ -16,23 +16,19 @@ blogsRouter.post('/', async (request, response) => {
   const user = await User.findById(request.user.id);
   const blog = new Blog({ title, author, url, likes, user: user.id });
   const savedBlog = await blog.save();
+  const populatedBlog = await savedBlog.populate('user');
 
   user.blogs = user.blogs.concat(savedBlog._id);
   await user.save();
-  response.status(201).json(savedBlog);
+  response.status(201).json(populatedBlog);
 });
 
 blogsRouter.put('/:id', async (request, response) => {
-  if (!request.token) {
-    return response.status(401).json({ error: 'token missing' });
-  }
+  const { params, body } = request;
 
-  const { title, author, url, likes } = request.body;
-  const blog = { title, author, url, likes };
-
-  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, {
+  const updatedBlog = await Blog.findByIdAndUpdate(params.id, body, {
     new: true,
-  });
+  }).populate('user');
 
   response.json(updatedBlog);
 });
