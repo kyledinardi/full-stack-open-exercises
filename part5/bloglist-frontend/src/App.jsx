@@ -18,8 +18,8 @@ const App = () => {
 
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
-      setUser(user);
       blogService.setToken(user.token);
+      setUser(user);
     }
 
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -35,6 +35,7 @@ const App = () => {
       });
 
       window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user));
+      blogService.setToken(user.token);
       setUser(user);
       setUsername('');
       setPassword('');
@@ -96,20 +97,22 @@ const App = () => {
         <p style={{ color: isErrorMessage ? 'red' : 'green' }}>{message}</p>
         <form onSubmit={handleLogin}>
           <div>
-            username
+            <label htmlFor='username'>username</label>
             <input
               type='text'
               value={username}
               name='Username'
+              id='username'
               onChange={({ target }) => setUsername(target.value)}
             />
           </div>
           <div>
-            password
+            <label htmlFor='password'>password</label>
             <input
               type='password'
               value={password}
               name='Password'
+              id='password'
               onChange={({ target }) => setPassword(target.value)}
             />
           </div>
