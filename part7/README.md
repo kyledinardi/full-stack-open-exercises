@@ -1,0 +1,1 @@
+Exercises 7.14-7.21 are in bloglist-redux
